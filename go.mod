@@ -6,6 +6,7 @@ toolchain go1.23.6
 
 require (
 	github.com/daeuniverse/dae v0.2.0
+	github.com/plar/go-adaptive-radix-tree/v2 v2.0.4
 	github.com/daeuniverse/outbound v0.0.0-20250722064253-00c4fbb38759
 	github.com/glebarez/sqlite v1.8.0
 	github.com/go-co-op/gocron v1.37.0
