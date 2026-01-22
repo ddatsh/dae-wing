@@ -10,6 +10,7 @@ import (
     "github.com/daeuniverse/dae-wing/pkg/prof"
 	"github.com/json-iterator/go/extra"
 	"os"
+	"runtime"
 )
 
 import (
@@ -17,6 +18,7 @@ import (
 )
 
 func main() {
+	runtime.SetMutexProfileFraction(1)
     prof.Start()
 	extra.RegisterFuzzyDecoders()
 
