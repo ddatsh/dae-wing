@@ -19,6 +19,7 @@ import (
 
 func main() {
 	runtime.SetMutexProfileFraction(1)
+	runtime.SetBlockProfileRate(1)
     prof.Start()
 	extra.RegisterFuzzyDecoders()
 
