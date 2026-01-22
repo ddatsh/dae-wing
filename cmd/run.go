@@ -19,6 +19,7 @@ import (
 	"github.com/daeuniverse/dae-wing/db"
 	"github.com/daeuniverse/dae-wing/graphql"
 	"github.com/daeuniverse/dae-wing/graphql/service/config"
+	"github.com/daeuniverse/dae-wing/pkg/prof"
 
 	"github.com/daeuniverse/dae-wing/graphql/service/subscription"
 	"github.com/daeuniverse/dae-wing/webrender"
@@ -121,6 +122,10 @@ var (
 				errorExit(err)
 			}
 			mux := http.NewServeMux()
+			mux.Handle("/debug/pprof/", http.DefaultServeMux)
+			mux.Handle("/debug/pprof/profile", http.DefaultServeMux)
+			mux.Handle("/debug/pprof/symbol", http.DefaultServeMux)
+			mux.Handle("/debug/pprof/trace", http.DefaultServeMux)
 			mux.Handle("/graphql", auth(cors.AllowAll().Handler(&relay.Handler{Schema: schema})))
 			if err = webrender.Handle(mux); err != nil {
 				errorExit(err)
@@ -139,6 +144,7 @@ var (
 				}
 				logrus.Printf("Listen on %v", listen)
 			listenAndServe:
+				prof.Stop()
 				if err = http.ListenAndServe(listen, mux); err != nil {
 					errorExit(err)
 				}

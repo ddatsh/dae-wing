@@ -331,3 +331,6 @@ modernc.org/memory v1.6.0 h1:i6mzavxrE9a30whzMfwf7XWVODx2r5OYXvU46cirX7o=
 modernc.org/memory v1.6.0/go.mod h1:PkUhL0Mugw21sHPeskwZW4D6VscE/GQJOnIpCnW6pSU=
 modernc.org/sqlite v1.23.1 h1:nrSBg4aRQQwq59JpvGEQ15tNxoO5pX/kUjcRNwSAGQM=
 modernc.org/sqlite v1.23.1/go.mod h1:OrDj17Mggn6MhE+iPbBNf7RGKODDE9NFT0f3EwDzJqk=
+github.com/plar/go-adaptive-radix-tree/v2 v2.0.4 h1:Viv/uI+PUSY+nXF6uNUYeVjw/6grZG+ngVGGFixjX+U=
+github.com/plar/go-adaptive-radix-tree/v2 v2.0.4/go.mod h1:8yf9K81YK94H4gKh/K3hCBeC2s4JA/PYgqMkkOadwvk=
+

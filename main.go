@@ -7,6 +7,7 @@ package main
 
 import (
 	"github.com/daeuniverse/dae-wing/cmd"
+    "github.com/daeuniverse/dae-wing/pkg/prof"
 	"github.com/json-iterator/go/extra"
 	"os"
 )
@@ -16,6 +17,7 @@ import (
 )
 
 func main() {
+    prof.Start()
 	extra.RegisterFuzzyDecoders()
 
 	if err := cmd.Execute(); err != nil {
