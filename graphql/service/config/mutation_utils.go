@@ -194,7 +194,7 @@ func uniquefyNodesName(nodes []*node) {
 		} else {
 			baseName := normNodeName(node.dbNode.Name)
 			if node.dbNode.SubscriptionID != nil {
-				baseName = fmt.Sprintf("%v.%v", *node.dbNode.SubscriptionID, baseName)
+				baseName = fmt.Sprintf("%v", baseName)
 			}
 			// SubID.Name
 			wantedName := baseName

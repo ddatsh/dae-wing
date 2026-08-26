@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net"
+	//"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,12 +14,11 @@ import (
 	"time"
 
 	"github.com/daeuniverse/dae-wing/cmd/internal"
-	"github.com/daeuniverse/dae-wing/common"
+	//"github.com/daeuniverse/dae-wing/common"
 	"github.com/daeuniverse/dae-wing/dae"
 	"github.com/daeuniverse/dae-wing/db"
 	"github.com/daeuniverse/dae-wing/graphql"
 	"github.com/daeuniverse/dae-wing/graphql/service/config"
-
 	"github.com/daeuniverse/dae-wing/graphql/service/subscription"
 	"github.com/daeuniverse/dae-wing/webrender"
 	"github.com/golang-jwt/jwt/v5"
@@ -111,7 +110,7 @@ var (
 				os.Exit(1)
 			}()
 			// Reload with running state.
-			if err := restoreRunningState(); err != nil {
+			if err := restoreRunningStateWithRetry(3, 2*time.Second); err != nil {
 				logrus.Warnln("Failed to restore last running state:", err)
 			}
 
@@ -122,23 +121,28 @@ var (
 			}
 			mux := http.NewServeMux()
 			mux.Handle("/graphql", auth(cors.AllowAll().Handler(&relay.Handler{Schema: schema})))
+			mux.Handle("/debug/pprof/", http.DefaultServeMux)
+			mux.Handle("/debug/pprof/profile", http.DefaultServeMux)
+			mux.Handle("/debug/pprof/symbol", http.DefaultServeMux)
+			mux.Handle("/debug/pprof/trace", http.DefaultServeMux)
 			if err = webrender.Handle(mux); err != nil {
 				errorExit(err)
 			}
 			go func() {
-				host, port, _ := net.SplitHostPort(listen)
-				if host == "0.0.0.0" || host == "::" {
-					addrs, err := common.GetIfAddrs()
-					if err == nil {
-						for _, addr := range addrs {
-							addr = net.JoinHostPort(addr, port)
-							logrus.Printf("Listen on http://%v", addr)
+				/*	host, port, _ := net.SplitHostPort(listen)
+					if host == "0.0.0.0" || host == "::" {
+						addrs, err := common.GetIfAddrs()
+						if err == nil {
+							for _, addr := range addrs {
+								addr = net.JoinHostPort(addr, port)
+								logrus.Printf("Listen on http://%v", addr)
+							}
+							goto listenAndServe
 						}
-						goto listenAndServe
-					}
-				}
-				logrus.Printf("Listen on %v", listen)
-			listenAndServe:
+					}*/
+				//logrus.Printf("Listen on %v", listen)
+				//listenAndServe:
+
 				if err = http.ListenAndServe(listen, mux); err != nil {
 					errorExit(err)
 				}
@@ -152,6 +156,31 @@ var (
 		},
 	}
 )
+
+func restoreRunningStateWithRetry(maxAttempts int, wait time.Duration) error {
+	if maxAttempts <= 0 {
+		maxAttempts = 1
+	}
+
+	var lastErr error
+	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		if err := restoreRunningState(); err != nil {
+			lastErr = err
+			if !isDatabaseLockedError(err) || attempt == maxAttempts {
+				return err
+			}
+			logrus.Warnf("restoreRunningState attempt %d/%d failed: %v; retry after %s", attempt, maxAttempts, err, wait)
+			time.Sleep(wait)
+			continue
+		}
+		return nil
+	}
+	return lastErr
+}
+
+func isDatabaseLockedError(err error) bool {
+	return err != nil && strings.Contains(strings.ToLower(err.Error()), "database is locked")
+}
 
 func restoreRunningState() (err error) {
 	reload, err := shouldReload()

@@ -8,7 +8,6 @@ package global
 import (
 	"fmt"
 	daeConfig "github.com/daeuniverse/dae/config"
-	"github.com/sirupsen/logrus"
 	"github.com/stoewer/go-strcase"
 	"reflect"
 	"strings"
@@ -47,10 +46,10 @@ func (b *builder) Build() (string, error) {
 			// Int.
 			switch field.(type) {
 			case uint, uint32, uint64, int64:
-				logrus.WithFields(logrus.Fields{
+				/*logrus.WithFields(logrus.Fields{
 					"name": structField.Name,
 					"type": structField.Type.String(),
-				}).Debugln("converting to graphQL int32: may exceed range for large values")
+				}).Debugln("converting to graphQL int32: may exceed range for large values")*/
 			}
 
 			b.WriteLine(1, name+": Int"+b.NotNullString)

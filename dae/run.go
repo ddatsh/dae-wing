@@ -16,6 +16,7 @@ import (
 	"github.com/daeuniverse/dae/control"
 	"github.com/daeuniverse/dae/pkg/config_parser"
 	"github.com/daeuniverse/dae/pkg/logger"
+	"github.com/daeuniverse/dae/pkg/prof"
 	"github.com/daeuniverse/outbound/protocol/direct"
 	"github.com/mohae/deepcopy"
 	"github.com/sirupsen/logrus"
@@ -124,6 +125,7 @@ loop:
 				}()
 				<-readyChan
 				log.Warnln("[Reload] Finished")
+				prof.Stop()
 				/* dae-wing start */
 				chCallback <- errReload
 				/* dae-wing end */
